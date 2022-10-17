@@ -1,0 +1,31 @@
+# for Doctor Who
+# detect and remove content starting from given frames
+# to avoid spoilers at the end of each episode
+#
+# requires actual frame examples taken from video files (same resolution!)
+# also requires extra ffmpeg libs (included)
+
+set -e
+
+# multiply script for each video
+for f in *.mkv
+do
+	cp convert.avs "${f}.avs"
+done
+
+mkdir result || true
+
+# process each script
+for avs in *.mkv.avs
+do
+	src=${avs%.avs*}
+	echo "$avs $src"
+	# -map 0:s if video contains subtitles
+	ffmpeg -y -i "$src" -i "$avs" -map 0:a -map 0:s -map 1:v -c:a copy -c:v libx264 -shortest -crf 18 -preset slower "result/$src"
+	#-t 60
+	#break
+done
+
+# for f in *.mkv; do ffmpeg -i $f -acodec copy -map 0:a ${f}.mka ; done
+# ffmpeg-normalize.exe *.mka -c:a ac3 -b:a 640K -ar 48000 -vn -sn -mn -cn -d
+# for f in *.mkv; do ffmpeg -i $f -i normalized/${f}.mkv -i ${f}.srt -map 0:v -map_metadata 0 -map_chapters 0 -map 1:a -map 2:s "-metadata:s:s:0" "language=eng" "-metadata:s:s:0" "handler_name=English" "-metadata:s:s:0" "title=English"  -acodec copy -vcodec copy -c:s srt result/${f} ; done
