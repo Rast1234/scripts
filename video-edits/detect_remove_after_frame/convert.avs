@@ -57,6 +57,18 @@ function findAnyFrame(v, skip_frames, thresh)
 		return x
 	}
 	
+	x = findFrame(v, "3.png", skip_frames, thresh)
+	if ( x != -1 )
+	{
+		return x
+	}
+	
+	x = findFrame(v, "4.png", skip_frames, thresh)
+	if ( x != -1 )
+	{
+		return x
+	}
+	
 	assert(false)
 }
 
@@ -64,7 +76,10 @@ function findAnyFrame(v, skip_frames, thresh)
 v = FFmpegSource2(GetVideoName())
 #return v
 skip_frames = int(40*60*v.FrameRate)  # skip first 40 min
+
+# validate first image is readable
 img = ImageSource("1.png", end=1)
 img2 = ConvertToYUV444(img)
-x = findAnyFrame(v, skip_frames, 10)
+
+x = findAnyFrame(v, skip_frames, 15)
 return v.Trim(0, x)

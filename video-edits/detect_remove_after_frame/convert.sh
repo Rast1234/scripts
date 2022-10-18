@@ -15,13 +15,24 @@ done
 
 mkdir result || true
 
+# test pass to see if all videos have desired frame
+for avs in *.mkv.avs
+do
+	src=${avs%.avs*}
+	echo "testing: $avs $src"
+	ffmpeg -y -hide_banner -loglevel error  -i "$src" -i "$avs" -map 1:v -c:a copy -c:v libx264 -shortest -crf 30 -preset fast -t 1 "result/test_$src"
+done
+
 # process each script
 for avs in *.mkv.avs
 do
 	src=${avs%.avs*}
 	echo "$avs $src"
-	# -map 0:s if video contains subtitles
-	ffmpeg -y -i "$src" -i "$avs" -map 0:a -map 0:s -map 1:v -c:a copy -c:v libx264 -shortest -crf 18 -preset slower "result/$src"
+	# low quality fast test
+	#ffmpeg -y -hide_banner  -i "$src" -i "$avs" -map 0:a -map 0:s -map 1:v -c:a copy -c:v libx264 -shortest -vf "scale=iw/4:ih/4" -crf 30 -preset ultrafast "result/$src"
+	#
+	# normal pass
+	ffmpeg -y -hide_banner -i "$src" -i "$avs" -map 0:a -map 0:s -map 1:v -c:a copy -c:v libx264 -shortest -crf 18 -preset slower "result/$src"
 	#-t 60
 	#break
 done
